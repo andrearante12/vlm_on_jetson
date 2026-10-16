@@ -1,0 +1,27 @@
+{
+  "timestamp": "2026-10-03T02:24:26",
+  "hostname": "jetson-orin",
+  "machine": "aarch64",
+  "python": "3.10.20",
+  "device_model": "NVIDIA Jetson Orin Nano Engineering Reference Developer Kit Super",
+  "l4t_release": [
+    "# R36 (release), REVISION: 4.7, GCID: 42132812, BOARD: generic, EABI: aarch64, DATE: Thu Sep 18 22:54:44 UTC 2025"
+  ],
+  "nvpmodel": "NV Power Mode: 25W\n1",
+  "memory": {
+    "MemTotal_MiB": 7619,
+    "MemAvailable_MiB": 3688,
+    "SwapTotal_MiB": 3809,
+    "SwapFree_MiB": 2529
+  },
+  "gpu_cur_freq_hz": "306000000",
+  "gpu_max_freq_hz": "918000000",
+  "torch": "2.5.0a0+872d972e41.nv24.08",
+  "cuda_available": true,
+  "torch_cuda": "12.6",
+  "gpu_name": "Orin",
+  "transformers": "4.57.6",
+  "tensorrt": null,
+  "cv2": "4.13.0",
+  "git_rev": null
+}

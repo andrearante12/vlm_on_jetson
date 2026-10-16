@@ -1,0 +1,7 @@
+# Teacher/labeler only (cloud model; never a latency benchmark subject).
+# Needs ANTHROPIC_API_KEY (or an `ant auth login` profile). Frames are sent to the Anthropic API.
+backend: anthropic
+model: claude-opus-5-5
+effort: high
+max_tokens: 16000
+jpeg_quality: 90

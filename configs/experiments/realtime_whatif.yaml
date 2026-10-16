@@ -1,0 +1,13 @@
+# Projection: how would real-time accuracy change if inference were 2x / 4x faster (e.g. on Thor or
+# with FP8/token pruning)? Uses the simulated clock: time advances by measured latency x scale.
+# Validate the projection later by running baseline.yaml on the real Thor.
+name: realtime_whatif
+model: internvl3_1b
+task: landing_json
+videos: [data/videos/*.mp4]
+runners: [realtime]
+realtime: {clock: simulated, camera_fps: 15}
+sweep:
+  - {realtime.latency_scale: 1.0}
+  - {realtime.latency_scale: 0.5}
+  - {realtime.latency_scale: 0.25}

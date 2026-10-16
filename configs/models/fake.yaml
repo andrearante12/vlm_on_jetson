@@ -1,0 +1,6 @@
+# Stand-in model: fixed 300 ms latency, always answers "safe, grass, no obstacles".
+# Use it to check the pipeline end to end before downloading real weights.
+backend: fake
+latency_ms: 300
+jitter_ms: 50
+response: '{"safe_to_land": true, "surface": "grass", "obstacles": []}'

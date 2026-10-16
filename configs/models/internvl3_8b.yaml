@@ -1,0 +1,7 @@
+# InternVL3-8B (InternViT-300M + Qwen2.5-7B), native transformers checkpoint (~17 GB bf16). Thor only.
+backend: hf
+family: auto
+model_id: OpenGVLab/InternVL3-8B-hf
+processor_call_kwargs:
+  max_patches: 6
+bbox_format: norm1000

@@ -1,0 +1,74 @@
+name: dji_first_look
+platform:
+  name: orin_nano
+  description: Jetson Orin Nano (Super) 8GB, JetPack 6 / L4T R36.4, CUDA 12.6
+  memory_gb: 8
+  model_defaults:
+    dtype: float16
+  recommended_models:
+  - internvl3_1b
+  - internvl2_5_1b
+  - qwen2_5_vl_3b_gguf
+videos:
+- data/videos/DJI_0168.MP4
+gt_dir: data/gt
+frames_dir: data/frames
+results_dir: results
+runners:
+- offline
+- realtime
+offline:
+  sample_fps: 1.0
+  use_gt_timestamps: true
+  gt_min_spacing_ms: 0
+  max_frames: null
+realtime:
+  clock: wall
+  camera_fps: 15
+  speed: 1.0
+  latency_scale: 1.0
+  extra_latency_ms: 0.0
+  duration_s: null
+  decision_ttl_ms: null
+latency:
+  n_warmup: 2
+  n_reps: 8
+  n_frames: 3
+  image_sides:
+  - 448
+  - 896
+  - 1280
+warmup: 2
+image:
+  max_side: 1280
+gen:
+  max_new_tokens: 384
+  temperature: 0.0
+telemetry:
+  enabled: true
+  interval_ms: 500
+model:
+  dtype: float16
+  backend: hf
+  family: auto
+  model_id: OpenGVLab/InternVL3-1B-hf
+  processor_call_kwargs:
+    max_patches: 6
+  bbox_format: norm1000
+  name: internvl3_1b
+task:
+  type: grounding
+  iou_threshold: 0.5
+  prompt: 'Detect every obstacle or hazard for a landing drone in this image (people,
+    vehicles, trees,
+
+    buildings, poles, wires, water, rocks, animals, fences, steep slopes).
+
+    Respond with ONLY a JSON list: [{"label": "<type>", "bbox": [x1, y1, x2, y2]}]
+    with coordinates
+
+    normalised to 0-1000 (top-left origin). Respond with [] if there are none.
+
+    '
+  name: grounding
+variant: task-grounding_runners-offline+realtime_max_new_tokens-384

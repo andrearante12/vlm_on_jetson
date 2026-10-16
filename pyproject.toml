@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "trails"
+version = "0.1.0"
+description = "Evaluation harness for small VLMs doing UAS landing-zone assessment on NVIDIA Jetson"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy",
+    "pyyaml",
+    "pillow",
+    "opencv-python-headless; platform_machine != 'aarch64'",  # Jetson images ship their own cv2
+    "requests",
+]
+
+[project.optional-dependencies]
+hf = ["transformers>=4.52,<5", "accelerate", "einops", "timm", "sentencepiece"]
+teacher = ["anthropic"]
+dev = ["pytest"]
+
+[project.scripts]
+trails = "trails.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["trails*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

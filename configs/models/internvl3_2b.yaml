@@ -1,0 +1,7 @@
+# InternVL3-2B (InternViT-300M + Qwen2.5-1.5B). ~4.5 GB fp16: tight on Orin Nano 8GB; fine on Thor.
+backend: hf
+family: auto
+model_id: OpenGVLab/InternVL3-2B-hf
+processor_call_kwargs:
+  max_patches: 6
+bbox_format: norm1000

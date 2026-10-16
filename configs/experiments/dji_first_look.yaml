@@ -1,0 +1,17 @@
+# First real-footage run: InternVL3-1B on DJI_0168 (1080p, 115 s). No ground truth yet, so this
+# measures speed, output validity and real-time behaviour, and records every prediction for review
+# (and labelling) in the viewer.
+name: dji_first_look
+model: internvl3_1b
+task: landing_json
+videos: [data/videos/DJI_0168.MP4]
+runners: [latency, offline, realtime]
+image: {max_side: 1280}
+offline: {sample_fps: 1.0}
+realtime: {clock: wall, camera_fps: 15}
+latency: {n_warmup: 2, n_reps: 8, n_frames: 3, image_sides: [448, 896, 1280]}
+gen: {max_new_tokens: 256, temperature: 0.0}
+sweep:
+  - {task: landing_json}
+  - {task: caption, runners: [offline, realtime], gen.max_new_tokens: 160}
+  - {task: grounding, runners: [offline, realtime], gen.max_new_tokens: 384}

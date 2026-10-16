@@ -1,0 +1,4 @@
+name: orin_agx
+description: Jetson AGX Orin 32/64GB, JetPack 6
+model_defaults:
+  dtype: float16

@@ -1,0 +1,65 @@
+# Usage (from the repo root):
+#   docker compose -f docker/compose.yaml --profile orin build
+#   docker compose -f docker/compose.yaml --profile orin run --rm trails-orin run configs/experiments/smoke.yaml
+# On Thor use --profile thor / service trails-thor. Same configs, same results/ layout.
+x-trails: &trails
+  runtime: nvidia
+  network_mode: host          # reach llama-server / vLLM on localhost
+  ipc: host
+  working_dir: /workspace
+  environment:
+    - ANTHROPIC_API_KEY       # passed through only if set on the host (teacher labelling)
+    - HF_TOKEN
+    - NVIDIA_VISIBLE_DEVICES=all
+  volumes:
+    - ..:/workspace                                   # code, configs, data/, results/
+    - ${HF_CACHE:-~/.cache/huggingface}:/data/hf      # model weights survive container rebuilds
+    # Host tools so runs record power mode and sample power/utilisation from inside the container.
+    - /usr/bin/tegrastats:/usr/bin/tegrastats:ro
+    - /usr/sbin/nvpmodel:/usr/sbin/nvpmodel:ro
+    - /etc/nvpmodel.conf:/etc/nvpmodel.conf:ro
+    - /etc/nv_tegra_release:/etc/nv_tegra_release:ro
+
+services:
+  trails-orin:
+    <<: *trails
+    profiles: [orin]
+    build: {context: .., dockerfile: docker/Dockerfile.orin}
+    image: nsf-trails:orin
+
+  trails-thor:
+    <<: *trails
+    profiles: [thor]
+    build: {context: .., dockerfile: docker/Dockerfile.thor}
+    image: nsf-trails:thor
+
+  # 4-bit GGUF VLM server for the 8GB Orin Nano (configs/models/qwen2_5_vl_3b_gguf.yaml).
+  # Needs a llama.cpp build with multimodal (mtmd) support in llama-server; if this image predates it,
+  # build a newer one with jetson-containers: `jetson-containers build llama_cpp`.
+  llama-server:
+    profiles: [llama]
+    image: ${LLAMA_IMAGE:-dustynv/llama_cpp:r36.4.0}
+    runtime: nvidia
+    network_mode: host
+    volumes:
+      - ${HF_CACHE:-~/.cache/huggingface}:/root/.cache/huggingface
+    command: >
+      llama-server -hf ${LLAMA_MODEL:-ggml-org/Qwen2.5-VL-3B-Instruct-GGUF:Q4_K_M}
+      --host 0.0.0.0 --port 8080 -ngl 99 -c 4096 --alias qwen2.5-vl-3b
+
+  # Optimised VLM server for Thor (configs/models/qwen2_5_vl_7b_vllm.yaml). Pick the newest NGC vLLM
+  # release whose CUDA matches the installed JetPack 7 (VLLM_IMAGE overrides the tag).
+  vllm-thor:
+    profiles: [vllm]
+    image: ${VLLM_IMAGE:-nvcr.io/nvidia/vllm:25.10-py3}
+    runtime: nvidia
+    network_mode: host
+    ipc: host
+    environment:
+      - HF_TOKEN
+    volumes:
+      - ${HF_CACHE:-~/.cache/huggingface}:/root/.cache/huggingface
+    command: >
+      vllm serve ${VLLM_MODEL:-Qwen/Qwen2.5-VL-7B-Instruct}
+      --host 0.0.0.0 --port 8000 --max-model-len 8192 --gpu-memory-utilization 0.5
+      --limit-mm-per-prompt '{"image": 1}'

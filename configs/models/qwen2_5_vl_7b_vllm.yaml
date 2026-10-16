@@ -1,0 +1,7 @@
+# Qwen2.5-VL-7B served by vLLM on Thor (docker compose --profile vllm up vllm-thor).
+# Optimised runtime: compare against qwen2_5_vl_7b (plain transformers) to measure the software gap.
+backend: openai
+base_url: http://localhost:8000/v1
+model: Qwen/Qwen2.5-VL-7B-Instruct
+timeout_s: 300
+bbox_format: pixels

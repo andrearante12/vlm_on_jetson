@@ -1,0 +1,10 @@
+# On-prem teacher: a large open VLM behind an OpenAI-compatible server (e.g. vLLM on Thor):
+#   vllm serve Qwen/Qwen2.5-VL-72B-Instruct-AWQ --max-model-len 8192
+# Keeps footage local. Point base_url at wherever the server runs.
+backend: openai
+base_url: http://localhost:8000/v1
+model: Qwen/Qwen2.5-VL-72B-Instruct-AWQ
+timeout_s: 600
+max_new_tokens: 2048
+extra_body:
+  response_format: {type: json_object}

@@ -1,0 +1,9 @@
+# InternVL2.5-1B: the 1B base model LiteVLM (arXiv 2506.07416) builds on. Original remote-code
+# checkpoint with reference dynamic tiling; LiteVLM uses 12 patches baseline, ~3.5 after patch selection.
+backend: hf
+family: internvl
+model_id: OpenGVLab/InternVL2_5-1B
+max_tiles: 6
+image_size: 448
+use_thumbnail: true
+bbox_format: norm1000

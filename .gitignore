@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.egg-info/
+.pytest_cache/
+.venv/
+
+# Data: footage, decoded frames and run outputs stay local (large, and footage may be private).
+# Move them between boards with scripts/transfer_data.sh.
+data/videos/*
+data/frames/
+data/gt/*
+data/annotations/*
+!data/**/.gitkeep
+results/
+
+# Local scratch
+*.log

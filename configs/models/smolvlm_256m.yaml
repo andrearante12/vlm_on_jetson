@@ -1,0 +1,10 @@
+# SmolVLM-256M-Instruct: tiny (~0.5 GB fp16). Useful as a lower bound and to sanity-check the hf
+# backend when memory is scarce; too weak to be a serious landing-assessment candidate.
+backend: hf
+family: auto
+model_id: HuggingFaceTB/SmolVLM-256M-Instruct
+bbox_format: norm1
+# By default the processor upscales images to a 2048 px longest edge (~17 tiles of 512 px). One tile
+# keeps activations small enough for the 8 GB Orin Nano.
+processor_kwargs:
+  size: {longest_edge: 512}

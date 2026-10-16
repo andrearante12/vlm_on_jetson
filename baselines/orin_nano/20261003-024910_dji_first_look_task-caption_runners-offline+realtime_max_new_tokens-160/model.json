@@ -1,0 +1,13 @@
+{
+  "backend": "hf",
+  "dtype": "float16",
+  "family": "auto",
+  "model_id": "OpenGVLab/InternVL3-1B-hf",
+  "processor_call_kwargs": {
+    "max_patches": 6
+  },
+  "bbox_format": "norm1000",
+  "name": "internvl3_1b",
+  "load_s": 30.4,
+  "n_params_m": 938.2
+}

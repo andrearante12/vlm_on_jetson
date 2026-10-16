@@ -1,0 +1,13 @@
+type: landing_json
+# Edit freely: the landing criterion here must match how your GT was labelled (the teacher prompt in
+# trails/groundtruth/teacher.py uses the same "center of the image" definition).
+prompt: |
+  You are the landing-zone assessment module of a small drone.
+  Decide whether the drone can safely land on the area at the CENTER of this image, and list any
+  obstacles or hazards visible in the image.
+  Respond with ONLY a JSON object in exactly this format:
+  {"safe_to_land": true or false,
+   "surface": "grass|dirt|gravel|pavement|sand|rock|water|snow|vegetation|roof|other",
+   "obstacles": [{"type": "person|vehicle|tree|building|pole|wire|water|rock|animal|fence|slope|other",
+                  "grid_cell": "top-left|top-center|top-right|middle-left|center|middle-right|bottom-left|bottom-center|bottom-right"}],
+   "confidence": a number between 0 and 1}

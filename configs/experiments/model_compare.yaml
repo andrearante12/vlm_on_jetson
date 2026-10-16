@@ -1,0 +1,13 @@
+# Same task and videos across candidate models. On the Orin Nano only the 1B models fit in fp16;
+# start llama-server for the GGUF entry (docker compose --profile llama up llama-server).
+name: model_compare
+task: landing_json
+model: internvl3_1b
+videos: [data/videos/*.mp4]
+runners: [offline, realtime]
+offline: {use_gt_timestamps: true, gt_min_spacing_ms: 1000}
+realtime: {clock: wall, camera_fps: 15}
+sweep:
+  - {model: internvl3_1b}
+  - {model: internvl2_5_1b}
+  - {model: qwen2_5_vl_3b_gguf}

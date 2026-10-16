@@ -1,0 +1,20 @@
+# Jetson Orin (JetPack 6 / L4T R36.x, CUDA 12.6) image, from jetson-containers.
+# The harness code is bind-mounted at /workspace at run time (see compose.yaml), so this image only
+# carries dependencies and is rebuilt rarely.
+ARG BASE=dustynv/l4t-pytorch:r36.4.0
+FROM ${BASE}
+
+ENV PYTHONPATH=/workspace \
+    HF_HOME=/data/hf \
+    PYTHONUNBUFFERED=1
+
+# jetson-containers images point pip at the Jetson wheel index; keep it (CUDA wheels) and add PyPI.
+RUN pip install --no-cache-dir --extra-index-url https://pypi.org/simple \
+        "transformers>=4.52,<5" accelerate einops timm sentencepiece \
+        anthropic requests pyyaml pillow pytest \
+ && (python3 -c "import cv2" 2>/dev/null || pip install --no-cache-dir --extra-index-url https://pypi.org/simple opencv-python-headless) \
+ && python3 -c "import torch, transformers, cv2; print('torch', torch.__version__, 'cuda', torch.cuda.is_available(), 'transformers', transformers.__version__)"
+
+WORKDIR /workspace
+ENTRYPOINT ["python3", "-m", "trails"]
+CMD ["info"]

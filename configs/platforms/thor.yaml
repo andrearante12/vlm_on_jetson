@@ -1,0 +1,7 @@
+name: thor
+description: Jetson AGX Thor (Blackwell GPU, 128GB), JetPack 7, CUDA 13, SBSA
+memory_gb: 128
+model_defaults:
+  dtype: bfloat16
+recommended_models: [internvl3_1b, internvl3_2b, qwen2_5_vl_3b, qwen2_5_vl_7b]
+# Thor supports FP8/FP4 via TensorRT-LLM / vLLM; serve those with the `openai` backend.

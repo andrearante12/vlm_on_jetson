@@ -1,0 +1,71 @@
+name: dji_first_look
+platform:
+  name: orin_nano
+  description: Jetson Orin Nano (Super) 8GB, JetPack 6 / L4T R36.4, CUDA 12.6
+  memory_gb: 8
+  model_defaults:
+    dtype: float16
+  recommended_models:
+  - internvl3_1b
+  - internvl2_5_1b
+  - qwen2_5_vl_3b_gguf
+videos:
+- data/videos/DJI_0168.MP4
+gt_dir: data/gt
+frames_dir: data/frames
+results_dir: results
+runners:
+- latency
+- offline
+- realtime
+offline:
+  sample_fps: 1.0
+  use_gt_timestamps: true
+  gt_min_spacing_ms: 0
+  max_frames: null
+realtime:
+  clock: wall
+  camera_fps: 15
+  speed: 1.0
+  latency_scale: 1.0
+  extra_latency_ms: 0.0
+  duration_s: null
+  decision_ttl_ms: null
+latency:
+  n_warmup: 2
+  n_reps: 8
+  n_frames: 3
+  image_sides:
+  - 448
+  - 896
+  - 1280
+warmup: 2
+image:
+  max_side: 1280
+gen:
+  max_new_tokens: 256
+  temperature: 0.0
+telemetry:
+  enabled: true
+  interval_ms: 500
+model:
+  dtype: float16
+  backend: hf
+  family: auto
+  model_id: OpenGVLab/InternVL3-1B-hf
+  processor_call_kwargs:
+    max_patches: 6
+  bbox_format: norm1000
+  name: internvl3_1b
+task:
+  type: landing_json
+  prompt: "You are the landing-zone assessment module of a small drone.\nDecide whether\
+    \ the drone can safely land on the area at the CENTER of this image, and list\
+    \ any\nobstacles or hazards visible in the image.\nRespond with ONLY a JSON object\
+    \ in exactly this format:\n{\"safe_to_land\": true or false,\n \"surface\": \"\
+    grass|dirt|gravel|pavement|sand|rock|water|snow|vegetation|roof|other\",\n \"\
+    obstacles\": [{\"type\": \"person|vehicle|tree|building|pole|wire|water|rock|animal|fence|slope|other\"\
+    ,\n                \"grid_cell\": \"top-left|top-center|top-right|middle-left|center|middle-right|bottom-left|bottom-center|bottom-right\"\
+    }],\n \"confidence\": a number between 0 and 1}\n"
+  name: landing_json
+variant: task-landing_json

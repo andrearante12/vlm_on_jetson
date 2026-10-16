@@ -1,0 +1,10 @@
+type: grounding
+iou_threshold: 0.5
+prompt: |
+  Detect every obstacle or hazard for a landing drone in this image (people, vehicles, trees,
+  buildings, poles, wires, water, rocks, animals, fences, steep slopes).
+  Respond with ONLY a JSON list: [{"label": "<type>", "bbox": [x1, y1, x2, y2]}] with coordinates
+  normalised to 0-1000 (top-left origin). Respond with [] if there are none.
+# Models can override this prompt with their native grounding syntax, e.g. in a model config:
+#   prompts:
+#     grounding: "Please provide the bounding box coordinates of all obstacles ..."

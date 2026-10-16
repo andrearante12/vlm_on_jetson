@@ -1,0 +1,5 @@
+| run | platform | power_mode | model | variant | task | total_ms_p50 | total_ms_p90 | ttft_ms_p50 | tok_per_s_p50 | peak_gpu_mem_mb | max_decision_hz | rt.effective_decision_hz | rt.frame_drop_rate | power_mw_mean | energy_per_call_j |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 20261003-022426_dji_first_look_task-landing_json | orin_nano | 25W | internvl3_1b | task-landing_json | landing_json | 4363.6 | 16059.5 | 627.8 | 10.5 | 1892.1 | 0.153 | 0.139 | 0.991 | 7817.6 | 51.2 |
+| 20261003-024910_dji_first_look_task-caption_runners-offline+realtime_max_new_tokens-160 | orin_nano | 25W | internvl3_1b | task-caption_runners-offline+realtime_max_new_tokens-160 | caption | 5666.7 | 7086.1 | 602.2 | 10.6 | 1891.8 | 0.174 | 0.183 | 0.988 | 7876.0 | 45.2 |
+| 20261003-030259_dji_first_look_task-grounding_runners-offline+realtime_max_new_tokens-384 | orin_nano | 25W | internvl3_1b | task-grounding_runners-offline+realtime_max_new_tokens-384 | grounding | 3754.5 | 3966.2 | 601.7 | 10.7 | 1891.8 | 0.252 | 0.270 | 0.982 | 8312.9 | 33.0 |

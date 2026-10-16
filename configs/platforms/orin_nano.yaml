@@ -1,0 +1,7 @@
+name: orin_nano
+description: Jetson Orin Nano (Super) 8GB, JetPack 6 / L4T R36.4, CUDA 12.6
+memory_gb: 8
+# Shared CPU/GPU memory: an fp16 1B VLM (~2 GB weights) fits; 2-3B models need 4-bit (llama.cpp GGUF).
+model_defaults:
+  dtype: float16        # Orin (Ampere) has no fast bf16 path
+recommended_models: [internvl3_1b, internvl2_5_1b, qwen2_5_vl_3b_gguf]

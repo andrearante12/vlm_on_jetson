@@ -1,0 +1,16 @@
+# Larger models that only fit on Thor, same video and task. The vLLM entry needs the vllm-thor
+# service running (docker compose -f docker/compose.yaml --profile vllm up -d vllm-thor).
+name: thor_model_compare
+task: landing_json
+model: internvl3_1b
+videos: [data/videos/*.MP4, data/videos/*.mp4]
+runners: [offline, realtime]
+offline: {sample_fps: 1.0}
+realtime: {clock: wall, camera_fps: 15}
+sweep:
+  - {model: internvl3_1b}
+  - {model: internvl3_2b}
+  - {model: qwen2_5_vl_3b}
+  - {model: qwen2_5_vl_7b}
+  - {model: internvl3_8b}
+  - {model: qwen2_5_vl_7b_vllm}

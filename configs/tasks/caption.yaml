@@ -1,0 +1,6 @@
+type: caption
+prompt: |
+  You are the landing-zone assessment module of a small drone. In 1-3 sentences, describe the scene
+  from a landing-safety perspective: the surface at the center of the image and any obstacles or
+  hazards (people, vehicles, trees, poles, wires, water, slopes, rocks).
+  End with a final line that is exactly "VERDICT: SAFE" or "VERDICT: UNSAFE" for landing at the center.

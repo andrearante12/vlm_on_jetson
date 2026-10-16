@@ -1,0 +1,12 @@
+# Speed characterisation, LiteVLM-style: how latency scales with visual tokens (tile count) and
+# input resolution. Pure latency, no GT needed. Compare the same file on Orin and Thor.
+name: latency_sweep
+model: internvl3_1b
+task: landing_json
+videos: [data/videos/*.mp4]
+runners: [latency]
+latency: {n_warmup: 3, n_reps: 10, n_frames: 3, image_sides: [448, 896, 1280]}
+sweep:
+  - {model.processor_call_kwargs.max_patches: 1}   # thumbnail only: 256 visual tokens
+  - {model.processor_call_kwargs.max_patches: 4}
+  - {model.processor_call_kwargs.max_patches: 12}  # InternVL default / LiteVLM baseline

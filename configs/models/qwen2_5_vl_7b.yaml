@@ -1,0 +1,8 @@
+# Qwen2.5-VL-7B-Instruct in transformers (~16 GB bf16). Thor-class memory only.
+backend: hf
+family: auto
+model_id: Qwen/Qwen2.5-VL-7B-Instruct
+processor_kwargs:
+  min_pixels: 200704     # 256 * 28 * 28
+  max_pixels: 802816     # 1024 * 28 * 28
+bbox_format: pixels

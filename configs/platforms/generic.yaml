@@ -1,0 +1,4 @@
+name: generic
+description: Non-Jetson machine (workstation / CI). Latency numbers are not comparable to Jetson runs.
+model_defaults:
+  dtype: float16

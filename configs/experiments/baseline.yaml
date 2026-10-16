@@ -1,0 +1,15 @@
+# Main measurement: offline accuracy ceiling vs. real-time (wall clock) accuracy for one model,
+# all three output modes. Requires GT in data/gt/ (import-gt or teacher) for accuracy numbers.
+name: baseline
+model: internvl3_1b
+task: landing_json
+videos: [data/videos/*.mp4]
+runners: [offline, realtime]
+image: {max_side: 1280}
+offline: {use_gt_timestamps: true, gt_min_spacing_ms: 1000}
+realtime: {clock: wall, camera_fps: 15}
+gen: {max_new_tokens: 256, temperature: 0.0}
+sweep:
+  - {task: landing_json}
+  - {task: caption, gen.max_new_tokens: 160}
+  - {task: grounding, gen.max_new_tokens: 384}

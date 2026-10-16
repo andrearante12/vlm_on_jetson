@@ -1,0 +1,9 @@
+# InternVL3-1B (InternViT-300M + Qwen2.5-0.5B), native transformers checkpoint. ~2 GB in fp16.
+backend: hf
+family: auto
+model_id: OpenGVLab/InternVL3-1B-hf
+# Dynamic tiling: number of 448x448 crops (+1 thumbnail). Fewer crops = fewer visual tokens; this is
+# the knob closest to LiteVLM's patch selection. Each crop is 256 tokens.
+processor_call_kwargs:
+  max_patches: 6
+bbox_format: norm1000

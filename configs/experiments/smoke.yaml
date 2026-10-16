@@ -1,0 +1,11 @@
+# End-to-end pipeline check with the fake model: no weights, finishes in ~1 minute.
+#   trails run configs/experiments/smoke.yaml --videos path/to/any.mp4
+name: smoke
+model: fake
+task: landing_json
+videos: [data/videos/*.mp4]
+runners: [latency, offline, realtime]
+offline: {sample_fps: 1.0, max_frames: 10}
+realtime: {camera_fps: 10, duration_s: 10}
+latency: {n_warmup: 1, n_reps: 5, n_frames: 2}
+warmup: 1

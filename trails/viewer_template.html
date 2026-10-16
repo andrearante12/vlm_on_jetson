@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>__TITLE__</title>
+<style>
+:root{
+  color-scheme:light;
+  --bg:#f7f7f5;--surface:#fcfcfb;--surface-2:#f0efec;--line:#e4e3de;--grid:#ebeae6;
+  --ink:#0b0b0b;--ink2:#52514e;--ink3:#7a7974;--accent:#2a78d6;
+  --s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;
+  --good:#0ca30c;--critical:#d03b3b;--warning:#fab219;--unknown:#9b9a94;
+  --held-good:rgba(12,163,12,.16);--held-critical:rgba(208,59,59,.16);--held-unknown:rgba(155,154,148,.18);
+  --phase:rgba(42,120,214,.06);
+}
+@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])){
+  color-scheme:dark;
+  --bg:#121211;--surface:#1a1a19;--surface-2:#232321;--line:#2e2e2b;--grid:#262624;
+  --ink:#ffffff;--ink2:#c3c2b7;--ink3:#8f8e86;--accent:#3987e5;
+  --s1:#3987e5;--s2:#d95926;--s3:#199e70;--unknown:#77766f;
+  --held-good:rgba(12,163,12,.22);--held-critical:rgba(208,59,59,.24);--held-unknown:rgba(119,118,111,.25);
+  --phase:rgba(57,135,229,.09);
+}}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#121211;--surface:#1a1a19;--surface-2:#232321;--line:#2e2e2b;--grid:#262624;
+  --ink:#ffffff;--ink2:#c3c2b7;--ink3:#8f8e86;--accent:#3987e5;
+  --s1:#3987e5;--s2:#d95926;--s3:#199e70;--unknown:#77766f;
+  --held-good:rgba(12,163,12,.22);--held-critical:rgba(208,59,59,.24);--held-unknown:rgba(119,118,111,.25);
+  --phase:rgba(57,135,229,.09);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{background:var(--surface);border-bottom:1px solid var(--line)}
+.wrap{max-width:1200px;margin:0 auto;padding:0 16px}
+.head{display:flex;gap:16px;align-items:flex-start;justify-content:space-between;padding:18px 0 12px;flex-wrap:wrap}
+h1{font-size:19px;margin:0 0 4px;letter-spacing:-.01em}
+.meta{color:var(--ink2);font-size:13px;display:flex;flex-wrap:wrap;gap:4px 14px}
+.meta b{color:var(--ink);font-weight:600}
+nav{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;gap:2px;overflow-x:auto}
+nav a{padding:10px 12px;color:var(--ink2);text-decoration:none;font-weight:500;white-space:nowrap;border-bottom:2px solid transparent}
+nav a:hover{color:var(--ink)}nav a.on{color:var(--ink);border-bottom-color:var(--accent)}
+section{padding:22px 0 8px}
+h2{font-size:16px;margin:0 0 4px}
+.sub{color:var(--ink2);margin:0 0 14px;font-size:13px;max-width:820px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.tile .k{color:var(--ink3);font-size:12px;font-weight:600}
+.tile .v{font-size:24px;font-weight:650;letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin-top:2px}
+.tile .v small{font-size:13px;font-weight:500;color:var(--ink2);margin-left:2px}
+.tile .n{color:var(--ink3);font-size:12px;margin-top:2px}
+.btn,select{font:inherit;font-size:13px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:7px;padding:6px 10px;cursor:pointer}
+.btn:hover{border-color:var(--ink3)}.btn.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.btn.good.on{background:var(--good);border-color:var(--good);color:#fff}.btn.crit.on{background:var(--critical);border-color:var(--critical);color:#fff}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.controls .sp{flex:1}
+.legend{display:flex;gap:14px;flex-wrap:wrap;color:var(--ink2);font-size:12px;margin:6px 0 2px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-2px}
+.chart{width:100%;overflow:hidden}
+.chart svg{display:block}
+svg text{fill:var(--ink3);font-size:11px;font-family:inherit}
+svg .lbl{fill:var(--ink2);font-size:12px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.fc{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column}
+.fc:hover{border-color:var(--ink3)}
+.fc .im{position:relative;background:#000;aspect-ratio:16/9}
+.fc .im img{width:100%;height:100%;object-fit:contain;display:block}
+.fc .bd{padding:8px 10px;font-size:12px;color:var(--ink2);display:flex;flex-direction:column;gap:4px}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:650;padding:2px 7px;border-radius:99px;color:#fff;white-space:nowrap}
+.badge.good{background:var(--good)}.badge.crit{background:var(--critical)}.badge.unk{background:var(--unknown)}
+.badge.ghost{background:transparent;color:var(--ink2);border:1px solid var(--line)}
+.ov{position:absolute;inset:0;pointer-events:none}
+.ov .box{position:absolute;border:2px solid #ffd23f;border-radius:2px;box-shadow:0 0 0 1px rgba(0,0,0,.6)}
+.ov .box span{position:absolute;top:-17px;left:-2px;background:#ffd23f;color:#000;font-size:10px;font-weight:700;padding:0 4px;border-radius:2px;white-space:nowrap}
+.ov .cell{position:absolute;background:rgba(255,210,63,.22);outline:1px solid rgba(255,210,63,.7)}
+.ov .cell span{position:absolute;left:3px;top:2px;color:#ffd23f;font-size:10px;font-weight:700;text-shadow:0 1px 2px #000}
+.ov .g{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.18) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.18) 1px,transparent 1px);background-size:33.333% 33.333%}
+.ov .ctr{position:absolute;left:33.333%;top:33.333%;width:33.333%;height:33.333%;outline:1px dashed rgba(255,255,255,.55)}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip{font-size:11px;padding:1px 6px;border-radius:99px;background:var(--surface-2);color:var(--ink2)}
+.chip.miss{text-decoration:line-through}
+.tip{position:fixed;z-index:50;pointer-events:none;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12px;box-shadow:0 6px 24px rgba(0,0,0,.18);max-width:300px;display:none}
+.tip .t{font-weight:650;margin-bottom:3px}.tip div{color:var(--ink2)}
+dialog{border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);padding:0;width:min(1100px,96vw);max-height:94vh}
+dialog::backdrop{background:rgba(0,0,0,.55)}
+.dlg{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(260px,1fr)}
+@media (max-width:820px){.dlg{grid-template-columns:1fr}}
+.dlg .im{position:relative;background:#000;align-self:start}
+.dlg .im img{width:100%;display:block}
+.dlg .side{padding:14px;overflow:auto;max-height:90vh;display:flex;flex-direction:column;gap:10px;font-size:13px}
+pre{background:var(--surface-2);border-radius:8px;padding:8px 10px;white-space:pre-wrap;word-break:break-word;font-size:12px;margin:0;color:var(--ink)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;font-size:12.5px}.kv span:nth-child(odd){color:var(--ink3)}
+table.t{width:100%;border-collapse:collapse;font-size:12.5px}
+table.t th,table.t td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+table.t th{color:var(--ink3);font-weight:600}table.t td.num{text-align:right;font-variant-numeric:tabular-nums}
+details summary{cursor:pointer;color:var(--ink2);font-weight:600;margin:8px 0}
+.note{font-size:12.5px;color:var(--ink2);background:var(--surface-2);border-radius:8px;padding:8px 10px}
+.empty{color:var(--ink3);padding:18px;text-align:center}
+code{font-size:12px;background:var(--surface-2);padding:1px 5px;border-radius:4px}
+</style>
+</head>
+<body>
+<header><div class="wrap head">
+  <div><h1 id="title"></h1><div class="meta" id="meta"></div></div>
+  <div class="row"><a class="btn" href="../index.html" id="allruns">All runs</a><button class="btn" id="theme" title="Toggle light/dark">◐ Theme</button></div>
+</div></header>
+<nav><div class="wrap" id="nav"></div></nav>
+<main class="wrap">
+  <section id="overview"><h2>Overview</h2><p class="sub" id="ov-sub"></p><div class="tiles" id="tiles"></div><div id="acc" style="margin-top:12px"></div></section>
+  <section id="timeline"><h2>Real-time timeline</h2>
+    <p class="sub">The video replayed as a live camera. Each <b>thin line</b> runs from when a frame was captured to when the model's decision on it came out (the lag). The <b>band</b> shows which decision was in effect at every moment: that is what the drone would have acted on. The <b>dots</b> below are the same model given unlimited time on 1 frame per second (offline). Hover for details; click to open the frame.</p>
+    <div class="controls"><select id="tl-video"></select><span class="sp"></span></div>
+    <div class="card"><div class="legend" id="tl-legend"></div><div class="chart" id="tl"></div></div>
+    <div class="tiles" id="rt-tiles" style="margin-top:10px"></div>
+  </section>
+  <section id="frames"><h2>Frames &amp; predictions</h2>
+    <p class="sub">What the model said for each frame. Yellow boxes/cells are the obstacles it reported; the dashed square marks the landing area (image centre) the prompt asks about. Use <b>Label</b> mode to mark frames yourself and export ground truth for <code>trails import-gt</code>.</p>
+    <div class="controls">
+      <select id="f-src"></select>
+      <select id="f-filter">
+        <option value="all">All frames</option><option value="safe">Model: safe</option><option value="unsafe">Model: unsafe</option>
+        <option value="unparsed">Unparsed output</option><option value="disagree">Disagrees with ground truth</option>
+        <option value="unlabeled">Not yet labelled by me</option>
+      </select>
+      <span class="sp"></span>
+      <span id="lab-count" class="sub" style="margin:0"></span>
+      <button class="btn" id="lab-export">Export my labels (CSV)</button>
+    </div>
+    <div class="gallery" id="gallery"></div>
+  </section>
+  <section id="latency"><h2>Latency</h2>
+    <p class="sub">Time per model call on this device. <b>Time to first token</b> covers image encoding and reading the prompt; <b>decode</b> is generating the answer, so long answers cost more.</p>
+    <div class="grid2" id="lat-charts"></div>
+    <div class="card" style="margin-top:12px"><div class="legend" id="bd-legend"></div><div class="chart" id="breakdown"></div></div>
+    <div class="card" style="margin-top:12px" id="sweep-card"><b>Input resolution sweep</b><div class="chart" id="sweep"></div></div>
+  </section>
+  <section id="power"><h2>Power &amp; utilisation</h2>
+    <p class="sub">Sampled from tegrastats every 0.5 s across the whole run. Shaded spans mark each phase of the run.</p>
+    <div class="grid2" id="tele"></div>
+  </section>
+  <section id="setup"><h2>Setup</h2><div class="grid2"><div class="card"><div class="kv" id="setup-kv"></div></div><div class="card"><b>Prompt</b><pre id="prompt" style="margin-top:6px"></pre></div></div>
+    <details><summary>Table of every real-time decision</summary><div class="card" style="overflow:auto"><table class="t" id="rt-table"></table></div></details>
+  </section>
+</main>
+<div class="tip" id="tip"></div>
+<dialog id="dlg"></dialog>
+<script>
+const D=/*__DATA__*/null;
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=(v,d=0,u='')=>v==null||Number.isNaN(v)?'–':Number(v).toLocaleString(undefined,{maximumFractionDigits:d,minimumFractionDigits:d})+u;
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+
+/* ---------- theme ---------- */
+(function(){const t=store.get('trails-theme');if(t)document.documentElement.dataset.theme=t;
+$('#theme').onclick=()=>{const dark=document.documentElement.dataset.theme?document.documentElement.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+const n=dark?'light':'dark';document.documentElement.dataset.theme=n;store.set('trails-theme',n);renderAll();};})();
+
+/* ---------- header ---------- */
+const M=D.meta;
+const showVar=M.variant&&M.variant!=='task-'+M.task;
+$('#title').textContent=`${M.model} · ${M.task}${showVar?' · '+M.variant:''}`;
+document.title=$('#title').textContent;
+$('#meta').innerHTML=[['Model',M.model_id||M.model],['Params',M.n_params_m?fmt(M.n_params_m,0,' M'):null],['Device',(M.device||'').replace('NVIDIA ','')],
+ ['Power mode',M.power_mode&&M.power_mode.replace('NV Power Mode: ','')],['Run',D.run]].filter(x=>x[1]).map(([k,v])=>`<span>${k}: <b>${esc(v)}</b></span>`).join('');
+if(location.protocol==='file:'&&!location.pathname.includes('/results/'))$('#allruns').style.display='none';
+
+const R=D.runners, MET=D.metrics;
+const secs=[['overview','Overview'],['timeline','Real-time'],['frames','Frames'],['latency','Latency'],['power','Power'],['setup','Setup']]
+ .filter(([id])=>id!=='timeline'||R.realtime.length);
+if(!R.realtime.length)$('#timeline').remove();
+$('#nav').innerHTML=secs.map(([id,l])=>`<a href="#${id}">${l}</a>`).join('');
+
+/* ---------- verdict helpers ---------- */
+const verdict=p=>!p||p.safe_to_land==null?'unk':p.safe_to_land?'good':'crit';
+const VL={good:'✓ Safe',crit:'✕ Unsafe',unk:'? No answer'};
+const VC={good:'--good',crit:'--critical',unk:'--unknown'};
+const gtOf=(video,idx)=>(D.gt[video]||{})[String(idx)];
+
+/* ---------- tooltip ---------- */
+const tip=$('#tip');
+function showTip(e,html){tip.innerHTML=html;tip.style.display='block';const w=tip.offsetWidth,h=tip.offsetHeight;
+ let x=e.clientX+14,y=e.clientY+14;if(x+w>innerWidth-8)x=e.clientX-w-14;if(y+h>innerHeight-8)y=e.clientY-h-14;tip.style.left=x+'px';tip.style.top=y+'px';}
+const hideTip=()=>tip.style.display='none';
+
+/* ---------- svg helpers ---------- */
+const NS='http://www.w3.org/2000/svg';
+function el(tag,attrs={},parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e;}
+function niceTicks(lo,hi,n=5){if(hi<=lo)hi=lo+1;const span=hi-lo,step0=span/n,mag=10**Math.floor(Math.log10(step0)),r=step0/mag;
+ const step=(r<1.5?1:r<3?2:r<7?5:10)*mag;const out=[];for(let v=Math.ceil(lo/step)*step;v<=hi+1e-9;v+=step)out.push(+v.toFixed(10));return out;}
+function svgBox(container,height){container.innerHTML='';const W=Math.max(280,container.clientWidth||600);const s=el('svg',{width:W,height,viewBox:`0 0 ${W} ${height}`,role:'img'},container);return [s,W];}
+
+/* ---------- overview ---------- */
+const MN={'safety.accuracy':'Landing verdict accuracy','safety.unsafe_f1':'Unsafe-detection F1','safety.false_safe_rate':'False-safe rate (unsafe called safe)',
+ 'obstacle_type.f1':'Obstacle F1 (by type)','parse_fail_rate':'Unparseable answers','no_decision_rate':'No decision yet',
+ 'hazard_mention.f1':'Hazards mentioned F1','rouge_l':'ROUGE-L vs reference caption','bleu4':'BLEU-4 vs reference caption',
+ 'class_agnostic.f1':'Box F1 (any class, IoU≥0.5)','class_aware.f1':'Box F1 (right class, IoU≥0.5)','class_agnostic.mean_iou_matched':'Mean IoU of matched boxes'};
+function tile(k,v,u,n){return `<div class="tile"><div class="k">${k}</div><div class="v">${v}${u?`<small>${u}</small>`:''}</div>${n?`<div class="n">${n}</div>`:''}</div>`;}
+function renderOverview(){
+ const lat=(MET.offline||MET.realtime||MET.latency||{}).latency||{};
+ const off=R.offline, parsed=off.filter(r=>r.parse_ok).length;
+ const rt=(MET.realtime||{}).realtime||{};
+ const tel=(MET.offline||MET.realtime||MET.latency||{}).telemetry||{};
+ const counts={good:0,crit:0,unk:0};off.forEach(r=>counts[verdict(r.pred)]++);
+ const nGt=Object.values(D.gt).reduce((a,g)=>a+Object.keys(g).length,0);
+ $('#ov-sub').innerHTML=`${Object.values(D.videos).map(v=>`<b>${esc(v.file)}</b> (${v.width}×${v.height}, ${fmt(v.fps,2)} fps, ${fmt(v.duration_s,1)} s)`).join(', ')}. `+
+  `${off.length} frames evaluated offline${R.realtime.length?`, ${R.realtime.length} real-time decisions`:''}. `+
+  (nGt?`${nGt} ground-truth frames.`:`<b>No ground truth yet</b>, so accuracy can't be scored. Label frames below, or run teacher labelling.`);
+ $('#tiles').innerHTML=[
+  tile('Latency per decision (p50)',fmt(lat.total_ms_p50,0),'ms',`p90 ${fmt(lat.total_ms_p90,0)} ms${MET.offline?' · all offline frames':''}`),
+  tile('Time to first token (p50)',fmt(lat.ttft_ms_p50,0),'ms','image encode + prompt'),
+  tile('Decode speed (p50)',fmt(lat.tok_per_s_p50,1),'tok/s',`${fmt(lat.out_tokens_mean,0)} tokens per answer`),
+  R.realtime.length?tile('Real-time decision rate',fmt(rt.effective_decision_hz,2),'Hz',`${fmt((rt.frame_drop_rate||0)*100,0)}% of camera frames dropped`):'',
+  R.realtime.length?tile('Decision lag (p50)',fmt(rt.capture_to_decision_ms_p50,0),'ms',`p90 ${fmt(rt.capture_to_decision_ms_p90,0)} ms`):'',
+  off.length?tile('Valid answers',fmt(parsed/off.length*100,0),'%',`${off.length-parsed} of ${off.length} unparseable`):'',
+  off.length?tile('Model verdicts (offline)',`${counts.good}<small>safe</small> ${counts.crit}<small>unsafe</small>`,'',counts.unk?`${counts.unk} without a verdict`:''):'',
+  tile('Board power (mean)',fmt((tel.power_total_mw_mean||0)/1000,1),'W',tel.energy_per_call_j?`${fmt(tel.energy_per_call_j,1)} J per decision`:''),
+  tile('Peak GPU memory',fmt(lat.peak_gpu_mem_mb,0),'MB',M.model_load_s!=null?`model load ${fmt(M.model_load_s,0)} s`:''),
+ ].join('');
+ const accOff=(MET.offline||{}).accuracy, accRt=(MET.realtime||{}).accuracy;
+ if(accOff||accRt){const g=(o,k)=>k.split('.').reduce((a,p)=>a&&a[p],o);
+  $('#acc').innerHTML=`<div class="card" style="overflow:auto"><b>Accuracy vs ground truth</b><table class="t" style="margin-top:6px"><tr><th>Metric</th><th class="num">Offline (no time limit)</th><th class="num">Real time</th><th class="num">Change</th></tr>`+
+   D.headline.map(k=>{const a=g(accOff,k),b=g(accRt,k);return `<tr><td title="${esc(k)}">${esc(MN[k]||k)}</td><td class="num">${fmt(a,3)}</td><td class="num">${fmt(b,3)}</td><td class="num">${a!=null&&b!=null?(b-a>=0?'+':'')+fmt(b-a,3):'–'}</td></tr>`}).join('')+`</table></div>`;}
+}
+
+/* ---------- timeline ---------- */
+const videosWithRt=[...new Set(R.realtime.map(r=>r.video))];
+if(R.realtime.length){$('#tl-video').innerHTML=videosWithRt.map(v=>`<option>${esc(v)}</option>`).join('');$('#tl-video').onchange=renderTimeline;
+ if(videosWithRt.length<2)$('#tl-video').style.display='none';}
+function renderTimeline(){
+ if(!R.realtime.length)return;
+ const video=$('#tl-video').value, dec=R.realtime.filter(r=>r.video===video).sort((a,b)=>a.emit_ms-b.emit_ms);
+ const off=R.offline.filter(r=>r.video===video), gt=D.gt[video]||{}, vi=D.videos[video]||{};
+ const tMax=Math.max(vi.duration_s||0,...dec.map(d=>d.emit_ms/1000))||1;
+ const hasGt=Object.keys(gt).length>0;
+ const rows=[['lag','Frame → decision'],['held','Decision in effect'],['off','Offline (1 fps)']].concat(hasGt?[['gt','Ground truth']]:[]);
+ const rowH=34,top=8,left=118,right=14,bottom=28,H=top+rows.length*rowH+bottom;
+ const [s,W]=svgBox($('#tl'),H);const x=t=>left+(t/tMax)*(W-left-right);const yR=i=>top+i*rowH;
+ rows.forEach(([,l],i)=>{el('text',{x:left-10,y:yR(i)+rowH/2+4,'text-anchor':'end',class:'lbl'},s).textContent=l;
+  el('line',{x1:left,x2:W-right,y1:yR(i)+rowH,y2:yR(i)+rowH,stroke:css('--grid')},s);});
+ niceTicks(0,tMax,Math.max(3,Math.floor((W-left)/90))).forEach(t=>{el('line',{x1:x(t),x2:x(t),y1:top,y2:H-bottom,stroke:css('--grid')},s);
+  el('text',{x:x(t),y:H-bottom+16,'text-anchor':'middle'},s).textContent=t+' s';});
+ const ri=Object.fromEntries(rows.map(([k],i)=>[k,i]));
+ // held bands
+ dec.forEach((d,i)=>{const t0=d.emit_ms/1000,t1=i+1<dec.length?dec[i+1].emit_ms/1000:tMax;const v=verdict(d.pred);
+  const r=el('rect',{x:x(t0),y:yR(ri.held)+5,width:Math.max(1,x(t1)-x(t0)-1),height:rowH-10,rx:3,fill:css('--held-'+(v==='good'?'good':v==='crit'?'critical':'unknown'))},s);
+  hook(r,d,'held');});
+ // lag lines: capture -> emit, on lag row, with a marker at emit
+ dec.forEach(d=>{const y=yR(ri.lag)+rowH/2,c=css(VC[verdict(d.pred)]);
+  el('line',{x1:x(d.capture_ms/1000),x2:x(d.emit_ms/1000),y1:y,y2:y,stroke:c,'stroke-width':2,'stroke-linecap':'round'},s);
+  el('circle',{cx:x(d.capture_ms/1000),cy:y,r:2.5,fill:css('--surface'),stroke:c,'stroke-width':1.5},s);
+  const m=el('circle',{cx:x(d.emit_ms/1000),cy:y,r:4,fill:c,stroke:css('--surface'),'stroke-width':2},s);
+  const hit=el('rect',{x:x(d.capture_ms/1000)-4,y:y-10,width:Math.max(10,x(d.emit_ms/1000)-x(d.capture_ms/1000)+8),height:20,fill:'transparent'},s);hook(hit,d,'lag');});
+ off.forEach(o=>{const c=css(VC[verdict(o.pred)]);const cx=x(o.t_ms/1000),cy=yR(ri.off)+rowH/2;
+  el('circle',{cx,cy,r:4.5,fill:c,stroke:css('--surface'),'stroke-width':2},s);const h=el('circle',{cx,cy,r:9,fill:'transparent'},s);hook(h,o,'off');});
+ if(hasGt)Object.entries(gt).forEach(([idx,g])=>{if(g.safe_to_land==null)return;const t=g.t_ms/1000;const c=css(g.safe_to_land?'--good':'--critical');
+  const cx=x(t),cy=yR(ri.gt)+rowH/2;el('rect',{x:cx-4,y:cy-4,width:8,height:8,rx:1.5,fill:c,stroke:css('--surface'),'stroke-width':1.5,transform:`rotate(45 ${cx} ${cy})`},s);
+  const h=el('circle',{cx,cy,r:9,fill:'transparent'},s);h.addEventListener('mousemove',e=>showTip(e,`<div class="t">Ground truth @ ${fmt(t,1)} s</div><div>${g.safe_to_land?'✓ Safe':'✕ Unsafe'}</div>`));h.addEventListener('mouseleave',hideTip);});
+ function hook(node,d,kind){node.style.cursor='pointer';
+  node.addEventListener('mousemove',e=>{const v=verdict(d.pred);const lag=d.emit_ms!=null?d.emit_ms-d.capture_ms:null;
+   showTip(e,`<div class="t">${VL[v]}</div>`+(kind==='off'?`<div>Offline · frame at ${fmt(d.t_ms/1000,1)} s</div><div>${fmt(d.timing.total_ms,0)} ms to answer</div>`:
+    `<div>Frame captured at ${fmt(d.capture_ms/1000,2)} s</div><div>Decision out at ${fmt(d.emit_ms/1000,2)} s (lag ${fmt(lag,0)} ms)</div>`)+
+    `<div>${(d.pred&&d.pred.obstacles||[]).length?'Obstacles: '+esc(d.pred.obstacles.map(o=>o.type).join(', ')):'No obstacles reported'}</div><div style="color:var(--ink3)">Click to open frame</div>`);});
+  node.addEventListener('mouseleave',hideTip);node.addEventListener('click',()=>openFrame(d));}
+ $('#tl-legend').innerHTML=`<span><i style="background:var(--good)"></i>✓ Safe</span><span><i style="background:var(--critical)"></i>✕ Unsafe</span><span><i style="background:var(--unknown)"></i>? No answer</span>`+(hasGt?`<span>◆ Ground truth</span>`:'');
+ const rt=(MET.realtime||{}).realtime||{};
+ $('#rt-tiles').innerHTML=[tile('Decisions made',fmt(dec.length,0),'',`over ${fmt(tMax,0)} s of video`),tile('Decision rate',fmt(rt.effective_decision_hz,2),'Hz',`camera at ${fmt((M.realtime_cfg||{}).camera_fps,0)} fps`),
+  tile('Frames dropped',fmt((rt.frame_drop_rate||0)*100,1),'%','arrived while model was busy'),tile('Decision lag (p50)',fmt(rt.capture_to_decision_ms_p50,0),'ms',`p90 ${fmt(rt.capture_to_decision_ms_p90,0)} ms · capture → decision`),
+  rt.staleness_at_gt_ms_p50!=null?tile('Staleness at GT (p50)',fmt(rt.staleness_at_gt_ms_p50,0),'ms','age of the frame behind the active decision'):''].join('');
+}
+
+/* ---------- frames ---------- */
+const LKEY='trails-labels:'+D.run;let LABELS=store.get(LKEY)||{};
+const OBST=['person','vehicle','tree','building','pole','wire','water','rock','animal','fence','slope','other'];
+const CELLS=['top-left','top-center','top-right','middle-left','center','middle-right','bottom-left','bottom-center','bottom-right'];
+const srcs=[['offline','Offline frames (1 fps)'],['realtime','Real-time decisions']].filter(([k])=>R[k].length);
+$('#f-src').innerHTML=srcs.map(([k,l])=>`<option value="${k}">${l}</option>`).join('');
+$('#f-src').onchange=$('#f-filter').onchange=renderGallery;
+function overlay(p){let h='<div class="g"></div><div class="ctr"></div>';if(!p||!p.obstacles)return h;
+ p.obstacles.forEach(o=>{if(o.bbox){const[a,b,c,d]=o.bbox;h+=`<div class="box" style="left:${a*100}%;top:${b*100}%;width:${(c-a)*100}%;height:${(d-b)*100}%"><span>${esc(o.type)}</span></div>`;}
+  else if(o.grid_cell){const i=CELLS.indexOf(o.grid_cell);if(i>=0)h+=`<div class="cell" style="left:${(i%3)*33.333}%;top:${Math.floor(i/3)*33.333}%;width:33.333%;height:33.333%"><span>${esc(o.type)}</span></div>`;}});return h;}
+function frameKey(r){return r.video+':'+r.idx;}
+function labelOf(r){return LABELS[frameKey(r)];}
+function renderGallery(){
+ const src=$('#f-src').value||'offline',filt=$('#f-filter').value;let list=R[src]||[];
+ list=list.filter(r=>{const v=verdict(r.pred),g=gtOf(r.video,r.idx);
+  if(filt==='safe')return v==='good';if(filt==='unsafe')return v==='crit';if(filt==='unparsed')return v==='unk';
+  if(filt==='disagree'){const truth=g&&g.safe_to_land!=null?g.safe_to_land:(labelOf(r)||{}).safe;return truth!=null&&v!=='unk'&&(v==='good')!==truth;}
+  if(filt==='unlabeled')return !labelOf(r);return true;});
+ const nl=Object.keys(LABELS).length;$('#lab-count').textContent=nl?`${nl} frame${nl>1?'s':''} labelled by you`:'';
+ if(!list.length){$('#gallery').innerHTML='<div class="empty">No frames match this filter.</div>';return;}
+ $('#gallery').innerHTML=list.map((r,i)=>{const v=verdict(r.pred),g=gtOf(r.video,r.idx),lab=labelOf(r),img=D.frames[frameKey(r)];
+  const t=src==='realtime'?`captured ${fmt(r.capture_ms/1000,1)} s → out ${fmt(r.emit_ms/1000,1)} s`:`${fmt(r.t_ms/1000,1)} s`;
+  const truth=g&&g.safe_to_land!=null?['GT',g.safe_to_land]:lab&&lab.safe!=null?['You',lab.safe]:null;
+  return `<div class="fc" data-i="${i}"><div class="im">${img?`<img loading="lazy" src="${img}" alt="frame at ${t}">`:''}<div class="ov">${overlay(r.pred)}</div></div>
+  <div class="bd"><div class="row" style="justify-content:space-between"><span class="badge ${v==='good'?'good':v==='crit'?'crit':'unk'}">${VL[v]}</span>
+  ${truth?`<span class="badge ghost">${truth[0]}: ${truth[1]?'✓ safe':'✕ unsafe'}</span>`:''}</div>
+  <div>${esc(t)} · ${fmt(r.timing.total_ms,0)} ms</div>
+  <div class="chips">${(r.pred&&r.pred.obstacles||[]).map(o=>`<span class="chip">${esc(o.type)}${o.grid_cell?' · '+esc(o.grid_cell):''}</span>`).join('')||'<span class="chip">no obstacles</span>'}</div></div></div>`;}).join('');
+ $('#gallery').querySelectorAll('.fc').forEach(n=>n.onclick=()=>openFrame(list[+n.dataset.i],list));
+}
+let DLG_LIST=null;
+function openFrame(r,list){DLG_LIST=list||(r.mode==='realtime'?R.realtime:R.offline);const dlg=$('#dlg');
+ const v=verdict(r.pred),g=gtOf(r.video,r.idx),lab=labelOf(r)||{},img=D.frames[frameKey(r)],t=r.timing||{};
+ dlg.innerHTML=`<div class="dlg"><div class="im">${img?`<img src="${img}" alt="">`:'<div class="empty">frame not embedded</div>'}<div class="ov">${overlay(r.pred)}</div></div>
+ <div class="side"><div class="row" style="justify-content:space-between"><span class="badge ${v==='good'?'good':v==='crit'?'crit':'unk'}">${VL[v]}</span>
+ <div class="row"><button class="btn" id="d-prev" title="Previous (←)">←</button><button class="btn" id="d-next" title="Next (→)">→</button><button class="btn" id="d-close">Close</button></div></div>
+ <div class="kv"><span>Video</span><span>${esc(r.video)} · frame ${r.idx}</span>
+ ${r.mode==='realtime'?`<span>Captured</span><span>${fmt(r.capture_ms/1000,2)} s</span><span>Decision out</span><span>${fmt(r.emit_ms/1000,2)} s (lag ${fmt(r.emit_ms-r.capture_ms,0)} ms)</span>`:`<span>Time</span><span>${fmt(r.t_ms/1000,2)} s</span>`}
+ <span>Latency</span><span>${fmt(t.total_ms,0)} ms (first token ${fmt(t.ttft_ms,0)} · decode ${fmt(t.decode_ms,0)})</span>
+ <span>Tokens</span><span>${fmt(t.n_in_tokens,0)} in · ${fmt(t.n_out_tokens,0)} out</span>
+ ${r.pred&&r.pred.surface?`<span>Surface</span><span>${esc(r.pred.surface)}</span>`:''}
+ ${g?`<span>Ground truth</span><span>${g.safe_to_land==null?'–':g.safe_to_land?'✓ safe':'✕ unsafe'}${g.obstacles&&g.obstacles.length?' · '+esc(g.obstacles.map(o=>o.type).join(', ')):''} <span style="color:var(--ink3)">(${esc(g.provenance)})</span></span>`:''}</div>
+ <div><b style="font-size:12px;color:var(--ink3)">MODEL OUTPUT (RAW)</b><pre style="margin-top:4px">${esc(r.raw||'')}</pre></div>
+ <div class="note"><b>Your label</b> <span style="color:var(--ink3)">(keys: S safe · U unsafe · C clear)</span>
+  <div class="row" style="margin:6px 0"><button class="btn good ${lab.safe===true?'on':''}" id="l-safe">✓ Safe</button><button class="btn crit ${lab.safe===false?'on':''}" id="l-unsafe">✕ Unsafe</button><button class="btn" id="l-clear">Clear</button></div>
+  <div class="chips">${OBST.map(o=>`<button class="btn ${(lab.obstacles||[]).includes(o)?'on':''}" data-o="${o}" style="padding:2px 8px;font-size:12px">${o}</button>`).join('')}</div></div>
+ </div></div>`;
+ const setLab=f=>{const k=frameKey(r);const cur=LABELS[k]||{safe:null,obstacles:[],video:r.video,idx:r.idx,t_ms:r.t_ms??r.capture_ms};f(cur);
+  if(cur.safe==null&&!cur.obstacles.length)delete LABELS[k];else LABELS[k]=cur;store.set(LKEY,LABELS);openFrame(r,DLG_LIST);renderGallery();};
+ $('#l-safe').onclick=()=>setLab(c=>c.safe=true);$('#l-unsafe').onclick=()=>setLab(c=>c.safe=false);$('#l-clear').onclick=()=>setLab(c=>{c.safe=null;c.obstacles=[];});
+ dlg.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>setLab(c=>{const o=b.dataset.o;c.obstacles=c.obstacles.includes(o)?c.obstacles.filter(x=>x!==o):[...c.obstacles,o];}));
+ const step=d=>{const i=DLG_LIST.indexOf(r)+d;if(i>=0&&i<DLG_LIST.length)openFrame(DLG_LIST[i],DLG_LIST);};
+ $('#d-prev').onclick=()=>step(-1);$('#d-next').onclick=()=>step(1);$('#d-close').onclick=()=>dlg.close();
+ dlg.onkeydown=e=>{const k=e.key.toLowerCase();if(k==='arrowleft')step(-1);else if(k==='arrowright')step(1);else if(k==='s')$('#l-safe').click();else if(k==='u')$('#l-unsafe').click();else if(k==='c')$('#l-clear').click();};
+ if(!dlg.open)dlg.showModal();}
+$('#dlg').addEventListener('click',e=>{if(e.target.id==='dlg')$('#dlg').close();});
+$('#lab-export').onclick=()=>{const rows=[['video','frame','t_ms','safe_to_land','obstacle_type']];
+ Object.values(LABELS).sort((a,b)=>a.idx-b.idx).forEach(l=>{const file=(D.videos[l.video]||{}).file||l.video;const s=l.safe==null?'':l.safe;
+  if(l.obstacles&&l.obstacles.length)l.obstacles.forEach(o=>rows.push([file,l.idx,l.t_ms,s,o]));else rows.push([file,l.idx,l.t_ms,s,'']);});
+ if(rows.length<2){alert('No labels yet: open a frame and press S or U.');return;}
+ const blob=new Blob([rows.map(r=>r.join(',')).join('\n')+'\n'],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`labels_${D.run}.csv`;a.click();
+ setTimeout(()=>alert(`Saved ${a.download}.\nOn the Jetson: trails import-gt ${a.download} --video data/videos/<video file>\nNote: frames you didn't tag with obstacles are imported as "no obstacles".`),50);};
+
+/* ---------- latency charts ---------- */
+function histogram(container,vals,color,unit){const n=vals.length;if(!n){container.innerHTML='<div class="empty">no data</div>';return;}
+ const lo=Math.min(...vals),hi=Math.max(...vals);const bins=Math.min(24,Math.max(6,Math.ceil(Math.sqrt(n))));const w=(hi-lo)/bins||1;
+ const cnt=Array(bins).fill(0);vals.forEach(v=>cnt[Math.min(bins-1,Math.floor((v-lo)/w))]++);
+ const H=170,l=36,r=10,t=10,b=26;const [s,W]=svgBox(container,H);const cmax=Math.max(...cnt);
+ const x=v=>l+(v-lo)/(w*bins)*(W-l-r),y=c=>H-b-(c/cmax)*(H-b-t);
+ niceTicks(0,cmax,3).forEach(c=>{el('line',{x1:l,x2:W-r,y1:y(c),y2:y(c),stroke:css('--grid')},s);el('text',{x:l-6,y:y(c)+4,'text-anchor':'end'},s).textContent=c;});
+ cnt.forEach((c,i)=>{if(!c)return;const x0=x(lo+i*w)+1,x1=x(lo+(i+1)*w)-1,y0=y(c),bw=Math.max(1,x1-x0),bh=H-b-y0;
+  const p=el('path',{d:`M${x0},${H-b}V${y0+Math.min(4,bh)}q0,-4 4,-4h${Math.max(0,bw-8)}q4,0 4,4V${H-b}Z`,fill:color},s);
+  const hit=el('rect',{x:x0,y:t,width:bw,height:H-b-t,fill:'transparent'},s);
+  hit.addEventListener('mousemove',e=>showTip(e,`<div class="t">${fmt(lo+i*w,0)}–${fmt(lo+(i+1)*w,0)} ${unit}</div><div>${c} call${c>1?'s':''}</div>`));hit.addEventListener('mouseleave',hideTip);});
+ niceTicks(lo,hi,4).forEach(v=>{if(v<lo||v>hi)return;el('text',{x:x(v),y:H-b+16,'text-anchor':'middle'},s).textContent=fmt(v,0);});
+ el('line',{x1:l,x2:W-r,y1:H-b,y2:H-b,stroke:css('--ink3')},s);}
+function renderLatency(){const runs=['latency','offline','realtime'].filter(k=>R[k].length);const box=$('#lat-charts');
+ box.innerHTML=runs.map(k=>`<div class="card"><b>${{latency:'Benchmark (fixed frames)',offline:'Offline frames',realtime:'Real-time decisions'}[k]}</b>
+  <div class="sub" style="margin:2px 0 4px">${R[k].length} calls · p50 ${fmt(MET[k].latency.total_ms_p50,0)} ms · p90 ${fmt(MET[k].latency.total_ms_p90,0)} ms. Distribution of total ms per call.</div><div class="chart" id="h-${k}"></div></div>`).join('');
+ runs.forEach(k=>histogram($('#h-'+k),R[k].map(r=>r.timing.total_ms).filter(v=>v!=null),css('--s1'),'ms'));
+ // stacked breakdown of mean preprocess / ttft / decode per runner
+ const parts=[['preprocess_ms','Preprocess','--s3'],['ttft_ms','First token (vision + prompt)','--s1'],['decode_ms','Decode (answer tokens)','--s2']];
+ $('#bd-legend').innerHTML='<b style="color:var(--ink)">Where the time goes (mean ms)</b>'+parts.map(p=>`<span><i style="background:var(${p[2]})"></i>${p[1]}</span>`).join('');
+ const rowsB=runs.map(k=>({k,v:parts.map(p=>{const xs=R[k].map(r=>r.timing[p[0]]).filter(v=>v!=null);return xs.length?xs.reduce((a,b)=>a+b,0)/xs.length:0;})}));
+ const H=28+rowsB.length*34,l=130,rr=60;const [s,W]=svgBox($('#breakdown'),H);const tot=Math.max(...rowsB.map(r=>r.v.reduce((a,b)=>a+b,0)))||1;
+ rowsB.forEach((row,i)=>{let acc=0;const y=8+i*34;el('text',{x:l-10,y:y+17,'text-anchor':'end',class:'lbl'},s).textContent={latency:'Benchmark',offline:'Offline',realtime:'Real-time'}[row.k];
+  row.v.forEach((v,j)=>{const x0=l+acc/tot*(W-l-rr),w=v/tot*(W-l-rr);acc+=v;if(w<0.5)return;
+   const r=el('rect',{x:x0,y,width:Math.max(0,w-2),height:24,rx:3,fill:css(parts[j][2])},s);
+   r.addEventListener('mousemove',e=>showTip(e,`<div class="t">${parts[j][1]}</div><div>${fmt(v,0)} ms mean (${fmt(v/row.v.reduce((a,b)=>a+b,0)*100,0)}%)</div>`));r.addEventListener('mouseleave',hideTip);});
+  el('text',{x:l+acc/tot*(W-l-rr)+6,y:y+17,class:'lbl'},s).textContent=fmt(acc,0)+' ms';});
+ // resolution sweep
+ const sweep=((MET.latency||{}).per_video)||{};const sides=Object.values(sweep).map(v=>v.latency_by_side).find(x=>x&&Object.keys(x).length>1);
+ if(!sides){$('#sweep-card').style.display='none';return;}
+ const ent=Object.entries(sides);const Hs=40+ent.length*30,ls=90;const [s2,W2]=svgBox($('#sweep'),Hs);const mx=Math.max(...ent.map(([,v])=>v.total_ms_p50||0))||1;
+ ent.forEach(([side,v],i)=>{const y=10+i*30,w=(v.total_ms_p50||0)/mx*(W2-ls-80);el('text',{x:ls-10,y:y+15,'text-anchor':'end',class:'lbl'},s2).textContent=side==='native'?'native':side+' px';
+  const r=el('rect',{x:ls,y,width:Math.max(1,w),height:20,rx:3,fill:css('--s1')},s2);el('text',{x:ls+w+6,y:y+15,class:'lbl'},s2).textContent=`${fmt(v.total_ms_p50,0)} ms · ${fmt(v.in_tokens_mean,0)} input tokens`;
+  r.addEventListener('mousemove',e=>showTip(e,`<div class="t">Longest side ${side}</div><div>p50 ${fmt(v.total_ms_p50,0)} ms · first token ${fmt(v.ttft_ms_p50,0)} ms</div>`));r.addEventListener('mouseleave',hideTip);});}
+
+/* ---------- telemetry ---------- */
+function lineChart(container,pts,key,color,unit,title,phases,t0,ymin0=true){const P=pts.filter(p=>p[key]!=null);
+ container.innerHTML='';const head=document.createElement('div');head.innerHTML=`<b>${title}</b>`;container.appendChild(head);
+ const c=document.createElement('div');c.className='chart';container.appendChild(c);if(!P.length){c.innerHTML='<div class="empty">not recorded</div>';return;}
+ const H=170,l=40,r=12,t=10,b=26;const [s,W]=svgBox(c,H);const tMax=(P[P.length-1].t-t0)||1;
+ const vals=P.map(p=>p[key]);const lo=ymin0?0:Math.min(...vals),hi=Math.max(...vals)*1.08||1;
+ const x=tt=>l+(tt-t0)/tMax*(W-l-r),y=v=>H-b-(v-lo)/(hi-lo)*(H-b-t);
+ (phases||[]).forEach(ph=>{const x0=x(ph.t0),x1=x(ph.t1);el('rect',{x:x0,y:t,width:Math.max(0,x1-x0),height:H-b-t,fill:css('--phase')},s);
+  el('text',{x:x0+4,y:t+11},s).textContent=ph.name;});
+ niceTicks(lo,hi,3).forEach(v=>{el('line',{x1:l,x2:W-r,y1:y(v),y2:y(v),stroke:css('--grid')},s);el('text',{x:l-6,y:y(v)+4,'text-anchor':'end'},s).textContent=fmt(v,v<10?1:0);});
+ niceTicks(0,tMax,4).forEach(v=>el('text',{x:x(t0+v),y:H-b+16,'text-anchor':'middle'},s).textContent=fmt(v,0)+' s');
+ el('path',{d:P.map((p,i)=>(i?'L':'M')+x(p.t).toFixed(1)+','+y(p[key]).toFixed(1)).join(''),fill:'none',stroke:color,'stroke-width':2,'stroke-linejoin':'round'},s);
+ const cross=el('line',{y1:t,y2:H-b,stroke:css('--ink3'),'stroke-dasharray':'3 3',visibility:'hidden'},s);const dot=el('circle',{r:4,fill:color,stroke:css('--surface'),'stroke-width':2,visibility:'hidden'},s);
+ const hit=el('rect',{x:l,y:t,width:W-l-r,height:H-b-t,fill:'transparent'},s);
+ hit.addEventListener('mousemove',e=>{const bb=s.getBoundingClientRect();const tt=t0+(e.clientX-bb.left-l)/(W-l-r)*tMax;let best=P[0];for(const p of P)if(Math.abs(p.t-tt)<Math.abs(best.t-tt))best=p;
+  cross.setAttribute('x1',x(best.t));cross.setAttribute('x2',x(best.t));cross.setAttribute('visibility','visible');dot.setAttribute('cx',x(best.t));dot.setAttribute('cy',y(best[key]));dot.setAttribute('visibility','visible');
+  const ph=(phases||[]).find(p=>best.t>=p.t0&&best.t<=p.t1);showTip(e,`<div class="t">${fmt(best[key],1)} ${unit}</div><div>${fmt(best.t-t0,1)} s into run${ph?' · '+ph.name:''}</div>`);});
+ hit.addEventListener('mouseleave',()=>{hideTip();cross.setAttribute('visibility','hidden');dot.setAttribute('visibility','hidden');});}
+function renderTele(){const T=D.telemetry;const box=$('#tele');if(!T.length){box.innerHTML='<div class="card empty">No telemetry recorded.</div>';return;}
+ const t0=T[0].t;const phases=['latency','offline','realtime'].filter(k=>MET[k]&&MET[k].t_start).map(k=>({name:{latency:'benchmark',offline:'offline',realtime:'real-time'}[k],t0:MET[k].t_start,t1:MET[k].t_end}));
+ box.innerHTML=['p','g','r','tt'].map(i=>`<div class="card" id="tc-${i}"></div>`).join('');
+ lineChart($('#tc-p'),T,'power_w',css('--s1'),'W','Board power (W)',phases,t0);
+ lineChart($('#tc-g'),T,'gpu',css('--s1'),'%','GPU utilisation (%)',phases,t0);
+ lineChart($('#tc-r'),T,'ram_gb',css('--s1'),'GB','RAM used (GB, shared CPU+GPU)',phases,t0);
+ lineChart($('#tc-tt'),T,'temp',css('--s1'),'°C','Junction temperature (°C)',phases,t0,false);}
+
+/* ---------- setup ---------- */
+function renderSetup(){const kv=[['Model',M.model_id],['Backend',M.backend],['Task',`${M.task} (${M.task_type})`],['Max new tokens',(M.gen||{}).max_new_tokens],
+ ['Real-time camera',M.realtime_cfg?`${M.realtime_cfg.camera_fps} fps · clock ${M.realtime_cfg.clock}${M.realtime_cfg.latency_scale!=1?' · latency ×'+M.realtime_cfg.latency_scale:''}`:null],
+ ['Device',M.device],['Power mode',M.power_mode],['torch / transformers',`${M.torch||'–'} / ${M.transformers||'–'}`],['Run started',M.timestamp]];
+ $('#setup-kv').innerHTML=kv.filter(x=>x[1]!=null).map(([k,v])=>`<span>${k}</span><span>${esc(v)}</span>`).join('');
+ $('#prompt').textContent=M.prompt||'';
+ $('#rt-table').innerHTML=`<tr><th>Video</th><th class="num">Captured (s)</th><th class="num">Out (s)</th><th class="num">Lag (ms)</th><th>Verdict</th><th>Obstacles</th></tr>`+
+  R.realtime.map(d=>`<tr><td>${esc(d.video)}</td><td class="num">${fmt(d.capture_ms/1000,2)}</td><td class="num">${fmt(d.emit_ms/1000,2)}</td><td class="num">${fmt(d.emit_ms-d.capture_ms,0)}</td><td>${VL[verdict(d.pred)]}</td><td>${esc((d.pred&&d.pred.obstacles||[]).map(o=>o.type).join(', '))}</td></tr>`).join('');}
+
+/* ---------- nav highlight + render ---------- */
+const navLinks=[...document.querySelectorAll('nav a')];
+addEventListener('scroll',()=>{let cur=navLinks[0];for(const a of navLinks){const s=document.querySelector(a.getAttribute('href'));if(s&&s.getBoundingClientRect().top<120)cur=a;}navLinks.forEach(a=>a.classList.toggle('on',a===cur));},{passive:true});
+function renderAll(){renderOverview();renderTimeline();renderGallery();renderLatency();renderTele();renderSetup();}
+let rz;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{renderTimeline();renderLatency();renderTele();},150);});
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',renderAll);
+renderAll();
+</script>
+</body>
+</html>

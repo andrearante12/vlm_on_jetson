@@ -1,0 +1,10 @@
+# Same model, optimised runtime: Qwen2.5-VL-7B via vLLM (start the vllm-thor compose service first).
+# Compare with the qwen2_5_vl_7b run from thor_model_compare to isolate the software-stack gain.
+name: thor_vllm
+model: qwen2_5_vl_7b_vllm
+task: landing_json
+videos: [data/videos/*.MP4, data/videos/*.mp4]
+runners: [latency, offline, realtime]
+offline: {sample_fps: 1.0}
+realtime: {clock: wall, camera_fps: 15}
+latency: {n_warmup: 2, n_reps: 8, n_frames: 3}
